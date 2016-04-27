@@ -1,11 +1,11 @@
 package main
 
-import {
+import (
 	"fmt",
 	"io/ioutil",
 	"net/http",
 	"strconv"
-}
+)
 
 func check_auth(h, Header) {
 	return true
