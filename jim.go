@@ -21,9 +21,10 @@ func router(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Request Authenticated")
 	}
 
-	if strings.HasPrefix(r.URL.Path, "/api/light/") {
+	switch {
+	case strings.HasPrefix(r.URL.Path, "/api/light/") && r.Method == "POST":
 		lightHandler(w, r, authenticated)
-	} else {
+	default:
 		http.Error(w, "Not Found", 404)
 	}
 
