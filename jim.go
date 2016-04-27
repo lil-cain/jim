@@ -1,4 +1,4 @@
-package main
+package jim
 
 import (
 	"fmt"
@@ -10,10 +10,6 @@ func check_auth(h http.Header) bool {
 	return true
 }
 
-func change_light(i int) error {
-	return nil
-}
-
 func router(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received request to ", r.URL.Path)
 	authenticated := check_auth(r.Header)
@@ -23,14 +19,16 @@ func router(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 	case strings.HasPrefix(r.URL.Path, "/api/light/") && r.Method == "POST":
-		lightHandler(w, r, authenticated)
+		setLightState(w, r, authenticated)
+	case strings.HasPrefix(r.URL.Path, "/api/state/") && r.Method == "GET":
+		getLightState(w, r, authenticated)
 	default:
 		http.Error(w, "Not Found", 404)
 	}
 
 }
 
-func lightHandler(w http.ResponseWriter, r *http.Request, authenticated bool) {
+func setLightState(w http.ResponseWriter, r *http.Request, authenticated bool) {
 	if !authenticated {
 		http.Error(w, "Not authenticated", 403)
 	}
@@ -40,6 +38,13 @@ func lightHandler(w http.ResponseWriter, r *http.Request, authenticated bool) {
 		http.Error(w, err.Error(), 500)
 	}
 	fmt.Fprintln(w, "ok")
+}
+
+func getLightState(w http.ResponseWriter, r *http.Request, authenticated bool) {
+	if !authenticated {
+		http.Error(w, "Not authenticated", 403)
+	}
+	fmt.Fprintln(w, "1")
 }
 
 func main() {
