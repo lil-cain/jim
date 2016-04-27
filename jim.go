@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt",
-	"io/ioutil",
-	"net/http",
+	"fmt"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 )
 
@@ -16,7 +16,7 @@ func lighthandler(w http.ResponseWriter, r *http.Request) {
 	if !authenticated {
 		http.Error(w, "Not authenticated", 403)
 	}
-	light_str = r.URL.Path[len"/api/light/"]
+	light_str = r.URL.Path[len("/api/light/")]
 	light_int, err = strconv.Atoi(light)
 	if err != nil {
 		http.Error(w, err.Error, 500)
