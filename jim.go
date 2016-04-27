@@ -11,7 +11,7 @@ func check_auth(h, Header) {
 	return true
 }
 
-func lighthandler(w http.ResponseWriter, r *http.Request) {
+func lightHandler(w http.ResponseWriter, r *http.Request) {
 	authenticated := check_auth(r.Header)
 	if !authenticated {
 		http.Error(w, "Not authenticated", 403)
@@ -26,4 +26,9 @@ func lighthandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error, 500)
 	}
 	fmt.Print(w, "ok")
+}
+
+func main() {
+	http.HandleFunc("/", lightHandler)
+	http.ListenAndServe(":8080", nil)
 }
