@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/stianeikeland/go-rpio"
 	"net/http"
 	"strings"
 	"time"
-	"github.com/stianeikeland/go-rpio"
 )
 
 func check_auth(h http.Header) bool {
@@ -52,28 +52,28 @@ func get_light_state(w http.ResponseWriter, r *http.Request, authenticated bool)
 func change_light(state int64) error {
 	if err := rpio.Open(); err != nil {
 		fmt.Println(err)
-    return err
+		return err
 	}
 	defer rpio.Close()
 
-	if state == 0 {
-		// stub for switching everything off
-		fmt.Println("Turning off everything")
-	} else {
-		pins := make(map[int64]int64)
-		pins[5] = 11
-		pins[4] = 7
-		pins[3] = 4
-		pins[2] = 19
-		pins[1] = 22
+	// map states to pins
+	pins := make(map[int64]int64)
+	pins[5] = 11
+	pins[4] = 7
+	pins[3] = 4
+	pins[2] = 19
+	pins[1] = 22
 
-		for _, v := range pins {
-			pin := rpio.Pin(v)
-			pin.Output()
-			pin.High()
-			time.Sleep(100 * time.Millisecond)
-		}
+	// initialise lights
+	for _, v := range pins {
+		pin := rpio.Pin(v)
+		pin.Output()
+		pin.High()
+		time.Sleep(100 * time.Millisecond)
+	}
 
+	// non zero state turns a light on
+	if state != 0 {
 		pin := rpio.Pin(pins[state])
 		pin.Output()
 		pin.Low()
