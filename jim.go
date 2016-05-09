@@ -37,7 +37,7 @@ func set_light_state(w http.ResponseWriter, r *http.Request, authenticated bool)
 	}
 	light := r.URL.Path[len("/api/light/")] - '0'
 
-	if light < 0 && light > 6 {
+	if light < 0 || light > 6 {
 		http.Error(w, "Bad state passed", 400)
 	}
 
