@@ -31,10 +31,16 @@ func router(w http.ResponseWriter, r *http.Request) {
 }
 
 func set_light_state(w http.ResponseWriter, r *http.Request, authenticated bool) {
+
 	if !authenticated {
 		http.Error(w, "Not authenticated", 403)
 	}
 	light := r.URL.Path[len("/api/light/")] - '0'
+
+	if light < 0 && light > 6 {
+		http.Error(w, "Bad state passed", 400)
+	}
+
 	err := change_light(int64(light))
 	if err != nil {
 		http.Error(w, err.Error(), 500)
