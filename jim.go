@@ -64,11 +64,11 @@ func change_light(state int64) error {
 
 	// map states to pins
 	pins := make(map[int64]int64)
-	pins[5] = 11
-	pins[4] = 7
-	pins[3] = 4
-	pins[2] = 19
-	pins[1] = 22
+	pins[5] = 27
+	pins[4] = 22
+	pins[3] = 9
+	pins[2] = 11
+	pins[1] = 13
 
 	// initialise lights
 	for _, v := range pins {
@@ -90,5 +90,5 @@ func change_light(state int64) error {
 
 func main() {
 	http.HandleFunc("/", router)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
