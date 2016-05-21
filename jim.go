@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/stianeikeland/go-rpio"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -34,14 +35,20 @@ func set_light_state(w http.ResponseWriter, r *http.Request, authenticated bool)
 
 	if !authenticated {
 		http.Error(w, "Not authenticated", 403)
+		return
 	}
-	light := r.URL.Path[len("/api/light/")] - '0'
+	light, err := strconv.Atoi(r.URL.Path[len("/api/light/"):])
+	if err != nil {
+		http.Error(w, "Bad URL passed", 400)
+		return
+	}
 
 	if light < 0 || light > 6 {
 		http.Error(w, "Bad state passed", 400)
+		return
 	}
 
-	err := change_light(int64(light))
+	err = change_light(int64(light))
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
@@ -51,6 +58,7 @@ func set_light_state(w http.ResponseWriter, r *http.Request, authenticated bool)
 func get_light_state(w http.ResponseWriter, r *http.Request, authenticated bool) {
 	if !authenticated {
 		http.Error(w, "Not authenticated", 403)
+		return
 	}
 	fmt.Fprintln(w, "1")
 }
