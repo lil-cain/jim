@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"errors"
 )
 
 func check_auth(h http.Header) bool {
@@ -36,13 +37,10 @@ func set_light_state(w http.ResponseWriter, r *http.Request, authenticated bool)
 		http.Error(w, "Not authenticated", 403)
 	}
 	light := r.URL.Path[len("/api/light/")] - '0'
-
-	if light < 0 || light > 6 {
-		http.Error(w, "Bad state passed", 400)
-	}
-
 	err := change_light(int64(light))
-	if err != nil {
+	if err.Error() == "InvalidValue" {
+		http.Error(w, "Invalid State", 400)
+	} else if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
 	fmt.Fprintln(w, "ok")
@@ -80,9 +78,14 @@ func change_light(state int64) error {
 
 	// non zero state turns a light on
 	if state != 0 {
-		pin := rpio.Pin(pins[state])
-		pin.Output()
-		pin.Low()
+		pin_number, ok := pins[state]
+		if ok {
+			pin := rpio.Pin(pin_number)
+			pin.Output()
+			pin.Low()
+		} else {
+			return errors.New("InvalidValue")
+		}
 	}
 
 	return nil
