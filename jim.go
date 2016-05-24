@@ -60,7 +60,24 @@ func get_light_state(w http.ResponseWriter, r *http.Request, authenticated bool)
 		http.Error(w, "Not authenticated", 403)
 		return
 	}
-	fmt.Fprintln(w, "1")
+	light_on := false
+
+	// map states to pins
+	pins := make(map[int64]int64)
+	pins[5] = 27
+	pins[4] = 22
+	pins[3] = 9
+	pins[2] = 11
+	pins[1] = 13
+	for light, pin_number := range pins {
+		pin := rpio.Pin(pin_number)
+		if pin.Read() == rpio.Low {
+			fmt.Fprintln(w, light)
+		}
+	}
+	if !light_on {
+		fmt.Fprintln(w, 0)
+	}
 }
 
 func change_light(state int64) error {
